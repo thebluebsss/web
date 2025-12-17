@@ -1,0 +1,14 @@
+Backend:
+
+Tuổi là số nguyên - lớp validation 
+validator: function (value) {
+        return Number.isInteger(value);
+      },
+Email duy nhất - unique: true trong Schema + xử lý error code 11000
+Promise.all - truy vấn song song tiết kiệm thời gian
+
+Frontend:
+
+STT tăng theo page - công thức (page-1)*limit + index + 1
+Chuẩn hóa dữ liệu - trim() cho string và parseInt() cho age trước khi gửi API
+
