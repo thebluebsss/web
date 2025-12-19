@@ -4,13 +4,13 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
 
-// Middleware - CẤU HÌNH CORS ĐÚng
+// Middleware
 app.use(
   cors({
     origin: [
       "https://frontend-thanh-long.firebaseapp.com",
       "https://frontend-thanh-long.web.app",
-      "http://localhost:3000", // Cho phép test local
+      "http://localhost:3000",
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
@@ -18,6 +18,23 @@ app.use(
 );
 
 app.use(express.json());
+
+// Root route
+app.get("/", (req, res) => {
+  res.json({
+    message: "User Management API",
+    version: "1.0.0",
+    endpoints: {
+      users: {
+        getAll: "GET /api/users?page=1&limit=5&search=",
+        create: "POST /api/users",
+        update: "PUT /api/users/:id",
+        delete: "DELETE /api/users/:id",
+      },
+    },
+    status: "Server is running! 🚀",
+  });
+});
 
 // Kết nối MongoDB
 mongoose
@@ -27,7 +44,7 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB Error:", err));
 
-// Schema và routes giữ nguyên...
+// Schema
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -56,7 +73,7 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", UserSchema);
 
-// API endpoints giữ nguyên...
+// API endpoints
 app.get("/api/users", async (req, res) => {
   try {
     let page = parseInt(req.query.page) || 1;
@@ -172,7 +189,7 @@ app.delete("/api/users/:id", async (req, res) => {
   }
 });
 
-// SỬA PORT - QUAN TRỌNG!
+// Start server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
