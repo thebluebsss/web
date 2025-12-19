@@ -3,48 +3,17 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
-
 // Middleware
-app.use(
-  cors({
-    origin: [
-      "https://frontend-thanh-long.firebaseapp.com",
-      "https://frontend-thanh-long.web.app",
-      "http://localhost:3000",
-    ],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-  })
-);
-
+app.use(cors());
 app.use(express.json());
-
-// Root route
-app.get("/", (req, res) => {
-  res.json({
-    message: "User Management API",
-    version: "1.0.0",
-    endpoints: {
-      users: {
-        getAll: "GET /api/users?page=1&limit=5&search=",
-        create: "POST /api/users",
-        update: "PUT /api/users/:id",
-        delete: "DELETE /api/users/:id",
-      },
-    },
-    status: "Server is running! 🚀",
-  });
-});
-
-// Kết nối MongoDB
+// Kết nối MongoDB với username là MSSV, password là MSSV, dbname là it4409
 mongoose
   .connect(
     "mongodb+srv://20225207:20225207@cluster0.tqz2rcb.mongodb.net/it4409"
   )
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB Error:", err));
-
-// Schema
+// TODO: Tạo Schema
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -56,6 +25,12 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Tuổi không được để trống"],
     min: [0, "Tuổi phải >= 0"],
+    validate: {
+      validator: function (value) {
+        return Number.isInteger(value);
+      },
+      message: "Tuổi phải là số nguyên",
+    },
   },
   email: {
     type: String,
@@ -73,9 +48,11 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", UserSchema);
 
-// API endpoints
+// TODO: Implement API endpoints
+// GET
 app.get("/api/users", async (req, res) => {
   try {
+    // Lấy query params
     let page = parseInt(req.query.page) || 1;
     let limit = parseInt(req.query.limit) || 5;
     const search = req.query.search || "";
@@ -83,6 +60,7 @@ app.get("/api/users", async (req, res) => {
     if (limit < 1) limit = 5;
     if (limit > 100) limit = 100;
 
+    // Tạo query filter cho search
     const filter = search
       ? {
           $or: [
@@ -92,8 +70,9 @@ app.get("/api/users", async (req, res) => {
           ],
         }
       : {};
-
+    // Tính skip
     const skip = (page - 1) * limit;
+    // Query database
     const [users, total] = await Promise.all([
       User.find(filter).skip(skip).limit(limit).lean(),
       User.countDocuments(filter),
@@ -112,6 +91,7 @@ app.get("/api/users", async (req, res) => {
   }
 });
 
+// POST
 app.post("/api/users", async (req, res) => {
   try {
     let { name, age, email, address } = req.body;
@@ -135,6 +115,7 @@ app.post("/api/users", async (req, res) => {
   }
 });
 
+// PUT
 app.put("/api/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -170,6 +151,7 @@ app.put("/api/users/:id", async (req, res) => {
   }
 });
 
+// DELETE
 app.delete("/api/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -188,9 +170,8 @@ app.delete("/api/users/:id", async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
-
 // Start server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
