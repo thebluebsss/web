@@ -35,4 +35,4 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: your-dockerhub-username/it4409-backend:latest
+          tags: your-dockerhub-username/it4409:latest

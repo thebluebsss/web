@@ -1,3 +1,4 @@
+require("dotenv").config({ quiet: true });
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -24,12 +25,6 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Tuổi không được để trống"],
     min: [0, "Tuổi phải >= 0"],
-    validate: {
-      validator: function (value) {
-        return Number.isInteger(value);
-      },
-      message: "Tuổi phải là số nguyên",
-    },
   },
   email: {
     type: String,
@@ -170,6 +165,7 @@ app.delete("/api/users/:id", async (req, res) => {
   }
 });
 // Start server
+const PORT = process.env.PORT || 3001;
 app.listen(3001, () => {
   console.log("Server running on http://localhost:3001");
 });
