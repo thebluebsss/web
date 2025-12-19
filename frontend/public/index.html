@@ -274,11 +274,6 @@
     <div id="root"></div>
 
     <script type="text/babel">
-      const { useState, useEffect } = React;
-
-      // API Configuration - THAY ĐỔI Ở ĐÂY
-      const API_BASE_URL = "https://user-management-8gs4.onrender.com";
-
       function App() {
         const [users, setUsers] = useState([]);
         const [page, setPage] = useState(1);
@@ -293,7 +288,7 @@
         // Fetch users
         const fetchUsers = async () => {
           setLoading(true);
-          const url = `${API_BASE_URL}/api/users?page=${page}&limit=${limit}&search=${search}`;
+          const url = `http://localhost:3001/api/users?page=${page}&limit=${limit}&search=${search}`;
 
           try {
             const response = await fetch(url);
@@ -313,9 +308,12 @@
         // Delete user
         const deleteUser = async (id) => {
           try {
-            const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
-              method: "DELETE",
-            });
+            const response = await fetch(
+              `http://localhost:3001/api/users/${id}`,
+              {
+                method: "DELETE",
+              }
+            );
 
             const data = await response.json();
 
@@ -393,6 +391,7 @@
           </div>
         );
       }
+      const { useState, useEffect } = React;
 
       function SearchBar({ value, onChange }) {
         const [searchInput, setSearchInput] = useState(value);
@@ -570,8 +569,8 @@
           };
 
           const url = user
-            ? `${API_BASE_URL}/api/users/${user._id}`
-            : `${API_BASE_URL}/api/users`;
+            ? `http://localhost:3001/api/users/${user._id}`
+            : `http://localhost:3001/api/users`;
           const method = user ? "PUT" : "POST";
 
           try {
